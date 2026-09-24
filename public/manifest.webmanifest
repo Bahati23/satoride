@@ -1,0 +1,16 @@
+{
+  "name": "SatoRide — Move. Earn. Save. Thrive.",
+  "short_name": "SatoRide",
+  "description": "Accessible micropayment and financial-resilience platform for African mobility.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf6ef",
+  "theme_color": "#e14a09",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

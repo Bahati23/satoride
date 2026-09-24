@@ -1,31 +1,36 @@
 import { useSeoMeta } from "@unhead/react";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/satoride/SiteHeader";
+import { SiteFooter } from "@/components/satoride/SiteFooter";
 
 const NotFound = () => {
-  const location = useLocation();
-
   useSeoMeta({
-    title: "404 - Page Not Found",
-    description: "The page you are looking for could not be found. Return to the home page to continue browsing.",
+    title: "404 - Page Not Found — SatoRide",
+    description: "The page you are looking for could not be found. Return to SatoRide to keep moving.",
   });
 
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">404</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline">
-          Return to Home
-        </a>
-      </div>
+    <div className="flex min-h-screen flex-col">
+      <SiteHeader />
+      <main className="container flex flex-1 items-center justify-center py-16">
+        <div className="space-y-5 text-center">
+          <p className="font-display text-7xl font-extrabold text-primary">404</p>
+          <h1 className="font-display text-2xl font-bold">This route doesn't exist</h1>
+          <p className="text-muted-foreground mx-auto max-w-sm">
+            Looks like this matatu left the stage. Head back and find your ride.
+          </p>
+          <Button asChild className="gap-2 rounded-full">
+            <Link to="/">
+              <ArrowLeft className="size-4" aria-hidden />
+              Back to SatoRide
+            </Link>
+          </Button>
+        </div>
+      </main>
+      <SiteFooter />
     </div>
   );
 };

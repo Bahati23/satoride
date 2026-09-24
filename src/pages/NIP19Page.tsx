@@ -1,5 +1,7 @@
 import { nip19 } from 'nostr-tools';
 import { useParams } from 'react-router-dom';
+import { KIND_SERVICE } from '@/lib/satoride';
+import { VehiclePayPage } from './VehiclePayPage';
 import NotFound from './NotFound';
 
 export function NIP19Page() {
@@ -16,27 +18,19 @@ export function NIP19Page() {
     return <NotFound />;
   }
 
-  const { type } = decoded;
+  const { type, data } = decoded;
 
   switch (type) {
-    case 'npub':
-    case 'nprofile':
-      // AI agent should implement profile view here
-      return <div>Profile placeholder</div>;
-
-    case 'note':
-      // AI agent should implement note view here
-      return <div>Note placeholder</div>;
-
-    case 'nevent':
-      // AI agent should implement event view here
-      return <div>Event placeholder</div>;
-
-    case 'naddr':
-      // AI agent should implement addressable event view here
-      return <div>Addressable event placeholder</div>;
+    case 'naddr': {
+      // SatoRide service listings open the passenger payment page
+      // (this is what the vehicle QR codes point to).
+      if (data.kind === KIND_SERVICE) {
+        return <VehiclePayPage pubkey={data.pubkey} d={data.identifier} />;
+      }
+      return <NotFound />;
+    }
 
     default:
       return <NotFound />;
   }
-} 
+}
