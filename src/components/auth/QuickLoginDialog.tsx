@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -62,6 +63,9 @@ export function QuickLoginDialog({
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-center">Welcome back</DialogTitle>
+          <DialogDescription className="sr-only">
+            Confirm quick login with the Nostr account detected in your browser extension.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-3 py-4">

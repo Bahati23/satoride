@@ -26,12 +26,15 @@ import { Progress } from '@/components/ui/progress';
 import { SiteHeader } from '@/components/satoride/SiteHeader';
 import { SiteFooter } from '@/components/satoride/SiteFooter';
 import { ActivityTicker } from '@/components/satoride/ActivityTicker';
+import { useTranslation } from '@/lib/i18n';
+import type { TranslationKey } from '@/lib/locales/en';
 
 export default function Index() {
+  const { t } = useTranslation();
+
   useSeoMeta({
-    title: 'SatoRide — Move. Earn. Save. Thrive.',
-    description:
-      'An accessible micropayment and financial-resilience platform for African mobility. Pay for matatu, boda, parking and charging in seconds — and turn every fare into earnings records, automatic savings and emergency funds.',
+    title: t('seo.home.title'),
+    description: t('seo.home.desc'),
   });
 
   return (
@@ -60,6 +63,8 @@ export default function Index() {
 /* ------------------------------------------------------------------ */
 
 function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative overflow-hidden">
       {/* Backdrop washes */}
@@ -76,35 +81,32 @@ function Hero() {
         <div className="animate-fade-up space-y-7">
           <p className="bg-card inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold tracking-wide shadow-sm">
             <Zap className="size-3.5 fill-amber-500 text-amber-500" aria-hidden />
-            BITCOIN-POWERED MICROPAYMENTS FOR AFRICAN MOBILITY
+            {t('hero.badge')}
           </p>
 
           <h1 className="font-display text-5xl font-extrabold leading-[1.02] sm:text-6xl lg:text-7xl">
-            Move. Earn.
+            {t('hero.title1')}
             <br />
-            Save.{' '}
+            {t('hero.title2')}{' '}
             <span className="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 bg-clip-text text-transparent">
-              Thrive.
+              {t('hero.title3')}
             </span>
           </h1>
 
           <p className="text-muted-foreground max-w-xl text-lg leading-relaxed">
-            SatoRide turns everyday transport payments into financial resilience.
-            Passengers pay any fare in seconds — matatu, boda, parking, charging —
-            while every payment quietly builds a worker's earnings record,
-            automatic savings and emergency fund.
+            {t('hero.subtitle')}
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="gap-2 rounded-full px-6 text-base font-bold shadow-lg shadow-orange-900/20">
               <Link to="/ride">
                 <QrCode className="size-5" aria-hidden />
-                Pay a fare
+                {t('hero.ctaPay')}
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="gap-2 rounded-full px-6 text-base font-semibold">
               <Link to="/worker">
-                Worker dashboard
+                {t('hero.ctaWorker')}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
             </Button>
@@ -116,7 +118,7 @@ function Hero() {
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
               </span>
-              Live on Nostr right now
+              {t('hero.live')}
             </p>
             <ActivityTicker />
           </div>
@@ -132,7 +134,9 @@ function Hero() {
 
 /** Stylised preview of the worker dashboard — the product's "aha" moment. */
 function WorkerCardMock() {
+  const { t } = useTranslation();
   const recent = [80, 150, 100, 70, 80];
+
   return (
     <div className="relative mx-auto max-w-md">
       {/* Glow */}
@@ -144,13 +148,13 @@ function WorkerCardMock() {
         <div className="bg-gradient-to-r from-orange-600 to-orange-500 px-5 py-4 text-orange-50">
           <div className="flex items-center justify-between">
             <p className="font-display text-sm font-bold tracking-[0.22em]">SATORIDE</p>
-            <p className="text-xs font-medium opacity-90">Brian · Boda rider</p>
+            <p className="text-xs font-medium opacity-90">{t('hero.mockRider')}</p>
           </div>
-          <p className="mt-3 text-xs uppercase tracking-wider opacity-80">Today's earnings</p>
+          <p className="mt-3 text-xs uppercase tracking-wider opacity-80">{t('hero.mockToday')}</p>
           <p className="font-display text-4xl font-extrabold tabular-nums">KSh 4,280</p>
           <div className="mt-2 flex gap-4 text-xs font-medium">
-            <span>31 trips</span>
-            <span>38 passengers</span>
+            <span>{t('hero.mockTrips')}</span>
+            <span>{t('hero.mockPassengers')}</span>
           </div>
         </div>
 
@@ -158,13 +162,13 @@ function WorkerCardMock() {
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-emerald-500/10 p-3">
               <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                <PiggyBank className="size-3.5" aria-hidden /> Auto-savings (5%)
+                <PiggyBank className="size-3.5" aria-hidden /> {t('hero.mockAutoSave')}
               </p>
               <p className="mt-1 text-lg font-bold tabular-nums">KSh 214</p>
             </div>
             <div className="rounded-xl bg-amber-500/10 p-3">
               <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
-                <Shield className="size-3.5" aria-hidden /> Emergency fund
+                <Shield className="size-3.5" aria-hidden /> {t('hero.mockEmergency')}
               </p>
               <p className="mt-1 text-lg font-bold tabular-nums">KSh 8,450</p>
             </div>
@@ -172,7 +176,7 @@ function WorkerCardMock() {
 
           <div>
             <div className="mb-1.5 flex justify-between text-xs font-medium">
-              <span className="text-muted-foreground">Emergency goal · KSh 20,000</span>
+              <span className="text-muted-foreground">{t('hero.mockGoal')}</span>
               <span className="tabular-nums">42%</span>
             </div>
             <Progress value={42} className="h-2" />
@@ -180,7 +184,7 @@ function WorkerCardMock() {
 
           <div className="space-y-1.5 border-t pt-3">
             <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
-              Recent payments
+              {t('hero.mockRecent')}
             </p>
             {recent.map((amount, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
@@ -205,28 +209,27 @@ function WorkerCardMock() {
 /* ------------------------------------------------------------------ */
 
 function Problem() {
+  const { t } = useTranslation();
+  const passengerItems: TranslationKey[] = ['problem.p1', 'problem.p2', 'problem.p3', 'problem.p4'];
+  const workerItems: TranslationKey[] = ['problem.w1', 'problem.w2', 'problem.w3', 'problem.w4'];
+
   return (
     <section className="container space-y-10 py-16 md:py-20">
       <SectionHeading
-        eyebrow="The problem"
-        title="Africa's busiest transactions leave no trace"
-        description="Transport is one of the most frequent financial activities in daily life. Yet every fare ends the moment it is paid — for both sides of the journey."
+        eyebrow={t('problem.eyebrow')}
+        title={t('problem.title')}
+        description={t('problem.desc')}
       />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="border-l-4 border-l-orange-500">
           <CardContent className="space-y-4 p-6">
-            <h3 className="font-display text-xl font-bold">For passengers</h3>
+            <h3 className="font-display text-xl font-bold">{t('problem.passengerTitle')}</h3>
             <ul className="text-muted-foreground space-y-2.5 text-sm leading-relaxed">
-              {[
-                'Long, fumbling payment processes at every stage',
-                'Cash inconvenience and exact-change anxiety',
-                'No record of what mobility actually costs each month',
-                'A different payment method for every service',
-              ].map((item) => (
-                <li key={item} className="flex gap-2.5">
+              {passengerItems.map((key) => (
+                <li key={key} className="flex gap-2.5">
                   <span className="mt-2 size-1.5 shrink-0 rounded-full bg-orange-500" aria-hidden />
-                  {item}
+                  {t(key)}
                 </li>
               ))}
             </ul>
@@ -235,23 +238,17 @@ function Problem() {
 
         <Card className="border-l-4 border-l-emerald-600">
           <CardContent className="space-y-4 p-6">
-            <h3 className="font-display text-xl font-bold">For transport workers</h3>
+            <h3 className="font-display text-xl font-bold">{t('problem.workerTitle')}</h3>
             <ul className="text-muted-foreground space-y-2.5 text-sm leading-relaxed">
-              {[
-                'Irregular income across dozens of small daily payments',
-                'No structured earnings record to show anyone',
-                'Saving is hard when income changes every day',
-                'Breakdowns and emergencies hit an empty cushion',
-              ].map((item) => (
-                <li key={item} className="flex gap-2.5">
+              {workerItems.map((key) => (
+                <li key={key} className="flex gap-2.5">
                   <span className="mt-2 size-1.5 shrink-0 rounded-full bg-emerald-600" aria-hidden />
-                  {item}
+                  {t(key)}
                 </li>
               ))}
             </ul>
             <blockquote className="rounded-xl bg-secondary p-4 text-sm italic leading-relaxed">
-              "A boda rider makes 30–40 trips a day. At the end of it, their entire
-              financial record is: <span className="font-semibold not-italic">I made approximately KSh 3,000.</span>"
+              {t('problem.quote')}
             </blockquote>
           </CardContent>
         </Card>
@@ -265,21 +262,23 @@ function Problem() {
 /* ------------------------------------------------------------------ */
 
 function CoreInsight() {
-  const steps = [
-    { label: 'Payment', detail: 'Passenger pays KSh 200' },
-    { label: 'Record', detail: 'Transaction stored on Nostr' },
-    { label: 'Earnings', detail: 'Income history grows' },
-    { label: 'Savings', detail: '5% set aside automatically' },
-    { label: 'Resilience', detail: 'Emergency fund builds' },
+  const { t } = useTranslation();
+
+  const steps: { label: TranslationKey; detail: TranslationKey }[] = [
+    { label: 'insight.s1t', detail: 'insight.s1d' },
+    { label: 'insight.s2t', detail: 'insight.s2d' },
+    { label: 'insight.s3t', detail: 'insight.s3d' },
+    { label: 'insight.s4t', detail: 'insight.s4d' },
+    { label: 'insight.s5t', detail: 'insight.s5d' },
   ];
 
   return (
     <section className="border-y bg-gradient-to-b from-orange-500/[0.06] to-transparent">
       <div className="container space-y-10 py-16 md:py-20">
         <SectionHeading
-          eyebrow="The core insight"
-          title="A fare shouldn't end when it's paid"
-          description="Every payment becomes a building block in a worker's financial life."
+          eyebrow={t('insight.eyebrow')}
+          title={t('insight.title')}
+          description={t('insight.desc')}
         />
 
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -290,8 +289,8 @@ function CoreInsight() {
                   <span className="font-display text-sm font-extrabold text-primary">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <p className="font-display text-lg font-bold">{step.label}</p>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{step.detail}</p>
+                  <p className="font-display text-lg font-bold">{t(step.label)}</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{t(step.detail)}</p>
                 </CardContent>
               </Card>
               {i < steps.length - 1 && (
@@ -313,33 +312,20 @@ function CoreInsight() {
 /* ------------------------------------------------------------------ */
 
 function HowItWorks() {
-  const steps = [
-    {
-      icon: QrCode,
-      title: 'Scan',
-      description:
-        'Scan the QR in the matatu or boda — or tap a service in the app. The fare appears instantly, in KSh.',
-    },
-    {
-      icon: Zap,
-      title: 'Pay',
-      description:
-        'One big button. Lightning settles underneath in about a second — no addresses, no jargon, no waiting.',
-    },
-    {
-      icon: BadgeCheck,
-      title: 'Ride',
-      description:
-        'A receipt is confirmed to you, the worker, and the record. That is the whole experience.',
-    },
+  const { t } = useTranslation();
+
+  const steps: { icon: typeof QrCode; title: TranslationKey; description: TranslationKey }[] = [
+    { icon: QrCode, title: 'how.s1t', description: 'how.s1d' },
+    { icon: Zap, title: 'how.s2t', description: 'how.s2d' },
+    { icon: BadgeCheck, title: 'how.s3t', description: 'how.s3d' },
   ];
 
   return (
     <section className="container space-y-10 py-16 md:py-20">
       <SectionHeading
-        eyebrow="Passenger experience"
-        title="Scan → Pay → Ride"
-        description="The technology disappears. Passengers never need to know what a satoshi is."
+        eyebrow={t('how.eyebrow')}
+        title={t('how.title')}
+        description={t('how.desc')}
       />
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -355,8 +341,8 @@ function HowItWorks() {
                     {i + 1}
                   </span>
                 </div>
-                <h3 className="font-display text-xl font-bold">{step.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                <h3 className="font-display text-xl font-bold">{t(step.title)}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{t(step.description)}</p>
               </CardContent>
             </Card>
             {i < steps.length - 1 && (
@@ -372,7 +358,7 @@ function HowItWorks() {
       <div className="flex justify-center">
         <Button asChild size="lg" className="gap-2 rounded-full px-8 font-bold">
           <Link to="/ride">
-            Try it — pay a demo fare
+            {t('how.cta')}
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </Button>
@@ -386,29 +372,31 @@ function HowItWorks() {
 /* ------------------------------------------------------------------ */
 
 function OneWallet() {
-  const services = [
-    { icon: Bus, name: 'Matatu', fare: 'KSh 80', note: 'CBD → Ngong' },
-    { icon: Motorbike, name: 'Boda boda', fare: 'KSh 150', note: 'Last-mile, anywhere' },
-    { icon: SquareParking, name: 'Parking', fare: 'KSh 50/hr', note: 'Town centres' },
-    { icon: Zap, name: 'EV & e-bike charging', fare: 'KSh 30', note: 'Top up while you shop' },
-    { icon: Wifi, name: 'Public Wi-Fi', fare: 'KSh 5', note: 'Micropayments, finally viable' },
+  const { t } = useTranslation();
+
+  const services: { icon: typeof Bus; name: TranslationKey; fare: string; note: TranslationKey }[] = [
+    { icon: Bus, name: 'onewallet.matatu', fare: 'KSh 80', note: 'onewallet.matatuNote' },
+    { icon: Motorbike, name: 'onewallet.boda', fare: 'KSh 150', note: 'onewallet.bodaNote' },
+    { icon: SquareParking, name: 'onewallet.parking', fare: 'KSh 50/hr', note: 'onewallet.parkingNote' },
+    { icon: Zap, name: 'onewallet.charging', fare: 'KSh 30', note: 'onewallet.chargingNote' },
+    { icon: Wifi, name: 'onewallet.wifi', fare: 'KSh 5', note: 'onewallet.wifiNote' },
   ];
 
   return (
     <section className="border-y bg-secondary/50">
       <div className="container space-y-10 py-16 md:py-20">
         <SectionHeading
-          eyebrow="Beyond matatus"
-          title="One wallet, every mobility service"
-          description="The same account handles the small payments that make up a day of movement — and transport passes for daily commuters."
+          eyebrow={t('onewallet.eyebrow')}
+          title={t('onewallet.title')}
+          description={t('onewallet.desc')}
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {services.map((service) => (
             <Card key={service.name} className="transition-transform duration-300 hover:-translate-y-1">
               <CardContent className="flex h-full flex-col gap-3 p-5">
                 <service.icon className="size-7 text-primary" aria-hidden />
-                <p className="font-display font-bold leading-tight">{service.name}</p>
-                <p className="text-muted-foreground mt-auto text-xs leading-relaxed">{service.note}</p>
+                <p className="font-display font-bold leading-tight">{t(service.name)}</p>
+                <p className="text-muted-foreground mt-auto text-xs leading-relaxed">{t(service.note)}</p>
                 <p className="font-display text-lg font-extrabold tabular-nums text-primary">
                   {service.fare}
                 </p>
@@ -426,12 +414,14 @@ function OneWallet() {
 /* ------------------------------------------------------------------ */
 
 function WorkerFeatures() {
+  const { t } = useTranslation();
+
   return (
     <section className="container space-y-10 py-16 md:py-20">
       <SectionHeading
-        eyebrow="For transport workers"
-        title="Every fare builds financial resilience"
-        description="Drivers, conductors and riders choose a simple rule — like saving 5% of every payment — and SatoRide follows it automatically."
+        eyebrow={t('wf.eyebrow')}
+        title={t('wf.title')}
+        description={t('wf.desc')}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -440,22 +430,19 @@ function WorkerFeatures() {
             <span className="grid size-12 place-items-center rounded-2xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
               <PiggyBank className="size-6" aria-hidden />
             </span>
-            <h3 className="font-display text-xl font-bold">Automatic savings</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Receive KSh 200 with a 5% rule → KSh 190 available, KSh 10 saved.
-              No willpower required, every single trip.
-            </p>
+            <h3 className="font-display text-xl font-bold">{t('wf.saveTitle')}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">{t('wf.saveDesc')}</p>
             <div className="space-y-2 rounded-xl bg-secondary p-3 text-sm">
               <div className="flex justify-between">
-                <span>Fare received</span>
+                <span>{t('wf.fareReceived')}</span>
                 <span className="font-semibold tabular-nums">KSh 200</span>
               </div>
               <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                <span>Auto-saved (5%)</span>
+                <span>{t('wf.autoSaved')}</span>
                 <span className="font-semibold tabular-nums">KSh 10</span>
               </div>
               <div className="flex justify-between border-t pt-2">
-                <span>Available</span>
+                <span>{t('wf.available')}</span>
                 <span className="font-semibold tabular-nums">KSh 190</span>
               </div>
             </div>
@@ -467,18 +454,15 @@ function WorkerFeatures() {
             <span className="grid size-12 place-items-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
               <Shield className="size-6" aria-hidden />
             </span>
-            <h3 className="font-display text-xl font-bold">Emergency fund</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              A separate cushion for breakdowns, medical costs and slow weeks —
-              with a visible goal that grows with every payment.
-            </p>
+            <h3 className="font-display text-xl font-bold">{t('wf.efTitle')}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">{t('wf.efDesc')}</p>
             <div className="space-y-2 rounded-xl bg-secondary p-3">
               <div className="flex justify-between text-sm">
-                <span>KSh 8,450 of KSh 20,000</span>
+                <span>{t('wf.efProgress')}</span>
                 <span className="font-semibold tabular-nums">42%</span>
               </div>
               <Progress value={42} className="h-2.5" />
-              <p className="text-muted-foreground text-xs">+ KSh 1,200 this month</p>
+              <p className="text-muted-foreground text-xs">{t('wf.efMonth')}</p>
             </div>
           </CardContent>
         </Card>
@@ -488,25 +472,20 @@ function WorkerFeatures() {
             <span className="grid size-12 place-items-center rounded-2xl bg-sky-500/12 text-sky-600 dark:text-sky-400">
               <History className="size-6" aria-hidden />
             </span>
-            <h3 className="font-display text-xl font-bold">A real financial history</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              After a month, a worker can finally say — with data — "I have
-              consistent income from my transport business."
-            </p>
+            <h3 className="font-display text-xl font-bold">{t('wf.historyTitle')}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">{t('wf.historyDesc')}</p>
             <div className="grid grid-cols-2 gap-2 rounded-xl bg-secondary p-3 text-sm">
-              <MiniStat label="30-day earnings" value="KSh 78,400" />
-              <MiniStat label="Trips" value="612" />
-              <MiniStat label="Avg / day" value="KSh 3,267" />
-              <MiniStat label="Saved" value="KSh 3,920" />
+              <MiniStat label={t('wf.stat30')} value="KSh 78,400" />
+              <MiniStat label={t('wf.statTrips')} value="612" />
+              <MiniStat label={t('wf.statAvg')} value="KSh 3,267" />
+              <MiniStat label={t('wf.statSaved')} value="KSh 3,920" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       <p className="text-muted-foreground mx-auto max-w-2xl text-center text-sm leading-relaxed">
-        Tomorrow, with explicit consent and strong privacy controls, that history
-        could help unlock asset financing, insurance and savings products.
-        <span className="font-semibold text-foreground"> The worker always owns their data.</span>
+        {t('wf.consent')}
       </p>
     </section>
   );
@@ -526,51 +505,23 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 /* ------------------------------------------------------------------ */
 
 function HauteFramework() {
-  const items = [
-    {
-      icon: HandHeart,
-      letter: 'H',
-      title: 'Human first',
-      description:
-        'We start with passengers, drivers, conductors and riders — and pick the technology second.',
-    },
-    {
-      icon: Accessibility,
-      letter: 'A',
-      title: 'Accessible',
-      description:
-        'PWA today, USSD and SMS for feature phones tomorrow. Large buttons, simple language, high contrast.',
-    },
-    {
-      icon: Zap,
-      letter: 'U',
-      title: 'Useful now',
-      description:
-        'The MVP already delivers Pay → Confirm → Record. Every future feature builds on that same transaction.',
-    },
-    {
-      icon: Eye,
-      letter: 'T',
-      title: 'Trustworthy',
-      description:
-        'Every payment confirms to passenger, worker and operator, with transparent histories and privacy controls.',
-    },
-    {
-      icon: Smartphone,
-      letter: 'E',
-      title: 'Easy',
-      description:
-        'Scan → Pay → Ride. The complexity of Lightning and Nostr stays underneath the interface.',
-    },
+  const { t } = useTranslation();
+
+  const items: { icon: typeof HandHeart; letter: string; title: TranslationKey; description: TranslationKey }[] = [
+    { icon: HandHeart, letter: 'H', title: 'haute.hTitle', description: 'haute.hDesc' },
+    { icon: Accessibility, letter: 'A', title: 'haute.aTitle', description: 'haute.aDesc' },
+    { icon: Zap, letter: 'U', title: 'haute.uTitle', description: 'haute.uDesc' },
+    { icon: Eye, letter: 'T', title: 'haute.tTitle', description: 'haute.tDesc' },
+    { icon: Smartphone, letter: 'E', title: 'haute.eTitle', description: 'haute.eDesc' },
   ];
 
   return (
     <section className="border-y bg-secondary/50">
       <div className="container space-y-10 py-16 md:py-20">
         <SectionHeading
-          eyebrow="Design principles"
-          title="Built HAUTE"
-          description="The five principles every SatoRide decision is measured against."
+          eyebrow={t('haute.eyebrow')}
+          title={t('haute.title')}
+          description={t('haute.desc')}
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {items.map((item) => (
@@ -582,8 +533,8 @@ function HauteFramework() {
                   </span>
                   <item.icon className="size-5 text-muted-foreground" aria-hidden />
                 </div>
-                <p className="font-display font-bold">{item.title}</p>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+                <p className="font-display font-bold">{t(item.title)}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{t(item.description)}</p>
               </CardContent>
             </Card>
           ))}
@@ -598,14 +549,16 @@ function HauteFramework() {
 /* ------------------------------------------------------------------ */
 
 function CrossBorder() {
+  const { t } = useTranslation();
   const countries = ['Kenya', 'Uganda', 'Tanzania', 'Ghana', 'Nigeria'];
+
   return (
     <section className="container space-y-10 py-16 md:py-20">
       <div className="mx-auto max-w-3xl space-y-8 text-center">
         <SectionHeading
-          eyebrow="The long-term vision"
-          title="One rail, many currencies"
-          description="Lightning can settle value across borders while the interface stays local — KSh in Nairobi, UGX in Kampala. A traveller keeps one mobility wallet across the continent."
+          eyebrow={t('cb.eyebrow')}
+          title={t('cb.title')}
+          description={t('cb.desc')}
         />
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
           {countries.map((country, i) => (
@@ -629,6 +582,8 @@ function CrossBorder() {
 /* ------------------------------------------------------------------ */
 
 function FinalCta() {
+  const { t } = useTranslation();
+
   return (
     <section className="container pb-20">
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-600 via-orange-500 to-amber-500 px-6 py-14 text-center text-orange-50 shadow-2xl shadow-orange-900/25 md:py-20">
@@ -643,17 +598,16 @@ function FinalCta() {
         />
         <div className="relative space-y-6">
           <h2 className="font-display mx-auto max-w-2xl text-4xl font-extrabold leading-tight md:text-5xl">
-            Your ride can become part of your financial life
+            {t('cta.title')}
           </h2>
           <p className="mx-auto max-w-xl text-base leading-relaxed text-orange-100">
-            Try the prototype: pay a demo fare with simulated Lightning, then watch
-            it land in the worker dashboard as earnings, savings and emergency fund.
+            {t('cta.desc')}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" variant="secondary" className="gap-2 rounded-full px-7 font-bold">
               <Link to="/ride">
                 <QrCode className="size-5" aria-hidden />
-                Pay a fare
+                {t('cta.pay')}
               </Link>
             </Button>
             <Button
@@ -664,7 +618,7 @@ function FinalCta() {
             >
               <Link to="/worker">
                 <Landmark className="size-5" aria-hidden />
-                Open worker demo
+                {t('cta.worker')}
               </Link>
             </Button>
             <Button
@@ -675,7 +629,7 @@ function FinalCta() {
             >
               <Link to="/ussd">
                 <CircleDollarSign className="size-5" aria-hidden />
-                Try the USSD simulator
+                {t('cta.ussd')}
               </Link>
             </Button>
           </div>

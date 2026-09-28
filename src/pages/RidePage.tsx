@@ -13,8 +13,8 @@ import { VehicleCard } from '@/components/satoride/VehicleCard';
 import { PayDialog } from '@/components/satoride/PayDialog';
 import { EmptyState } from '@/components/satoride/EmptyState';
 import { useVehicles } from '@/hooks/useVehicles';
+import { SERVICE_TYPE_KEYS, useTranslation } from '@/lib/i18n';
 import {
-  SERVICE_TYPE_LABEL,
   SERVICE_TYPES,
   type ServiceType,
   type VehicleService,
@@ -22,10 +22,11 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function RidePage() {
+  const { t } = useTranslation();
+
   useSeoMeta({
-    title: 'Pay a fare — SatoRide',
-    description:
-      'Choose a matatu, boda, parking bay or charging point and pay in seconds. Scan → Pay → Ride.',
+    title: t('seo.ride.title'),
+    description: t('seo.ride.desc'),
   });
 
   const { data: services, isLoading } = useVehicles();
@@ -48,7 +49,7 @@ export default function RidePage() {
 
   const activeTypes = useMemo(() => {
     const present = new Set(services?.map((s) => s.type));
-    return SERVICE_TYPES.filter((t) => present.has(t));
+    return SERVICE_TYPES.filter((type) => present.has(type));
   }, [services]);
 
   return (
@@ -58,16 +59,13 @@ export default function RidePage() {
       <main className="container flex-1 space-y-8 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="font-display text-4xl font-extrabold">Pay a fare</h1>
-            <p className="text-muted-foreground max-w-md">
-              Pick a service — or scan its QR in the real world — then confirm and
-              pay. Every payment lands as a verifiable receipt.
-            </p>
+            <h1 className="font-display text-4xl font-extrabold">{t('ride.title')}</h1>
+            <p className="text-muted-foreground max-w-md">{t('ride.desc')}</p>
           </div>
           <Button asChild variant="outline" className="gap-2 rounded-full">
             <Link to="/receipts">
               <ReceiptText className="size-4" aria-hidden />
-              My receipts
+              {t('ride.myReceipts')}
               <ArrowRight className="size-4" aria-hidden />
             </Link>
           </Button>
@@ -79,23 +77,23 @@ export default function RidePage() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, plate or route…"
+              placeholder={t('ride.searchPlaceholder')}
               className="pl-9"
-              aria-label="Search services"
+              aria-label={t('ride.searchAria')}
             />
           </div>
-          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by service type">
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('ride.filterAria')}>
             <FilterPill
               active={typeFilter === 'all'}
               onClick={() => setTypeFilter('all')}
-              label="All"
+              label={t('ride.all')}
             />
             {activeTypes.map((type) => (
               <FilterPill
                 key={type}
                 active={typeFilter === type}
                 onClick={() => setTypeFilter(type)}
-                label={SERVICE_TYPE_LABEL[type]}
+                label={t(SERVICE_TYPE_KEYS[type])}
               />
             ))}
           </div>
@@ -122,10 +120,7 @@ export default function RidePage() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <EmptyState
-            title="No services found"
-            description="Try a different search, check your relay connection, or wait a moment for services to load."
-          />
+          <EmptyState title={t('ride.emptyTitle')} description={t('ride.emptyDesc')} />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((service) => (

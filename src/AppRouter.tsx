@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { LanguageProvider } from "./lib/i18n";
 
 import Index from "./pages/Index";
 import RidePage from "./pages/RidePage";
@@ -14,18 +15,20 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/ride" element={<RidePage />} />
-        <Route path="/receipts" element={<ReceiptsPage />} />
-        <Route path="/worker" element={<WorkerPage />} />
-        <Route path="/operator" element={<OperatorPage />} />
-        <Route path="/ussd" element={<UssdPage />} />
-        {/* NIP-19 route for npub1, note1, naddr1, nevent1, nprofile1 */}
-        <Route path="/:nip19" element={<NIP19Page />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <LanguageProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/ride" element={<RidePage />} />
+          <Route path="/receipts" element={<ReceiptsPage />} />
+          <Route path="/worker" element={<WorkerPage />} />
+          <Route path="/operator" element={<OperatorPage />} />
+          <Route path="/ussd" element={<UssdPage />} />
+          {/* NIP-19 route for npub1, note1, naddr1, nevent1, nprofile1 */}
+          <Route path="/:nip19" element={<NIP19Page />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

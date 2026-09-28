@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { QRCodeCanvas } from '@/components/ui/qrcode';
 import { useToast } from '@/hooks/useToast';
+import { useTranslation } from '@/lib/i18n';
 import { serviceNaddr, type VehicleService } from '@/lib/satoride';
 
 /** QR code passengers scan to open this service's payment page. */
@@ -22,6 +23,7 @@ export function VehicleQrDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { toast } = useToast();
+  const { t } = useTranslation();
   if (!service) return null;
 
   const naddr = serviceNaddr(service);
@@ -30,9 +32,9 @@ export function VehicleQrDialog({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      toast({ title: 'Payment link copied' });
+      toast({ title: t('qr.copied') });
     } catch {
-      toast({ variant: 'destructive', title: 'Could not copy link' });
+      toast({ variant: 'destructive', title: t('qr.copyFail') });
     }
   };
 
@@ -40,10 +42,8 @@ export function VehicleQrDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="font-display">Passenger payment QR</DialogTitle>
-          <DialogDescription>
-            Print this in the vehicle. Passengers scan → confirm → pay.
-          </DialogDescription>
+          <DialogTitle className="font-display">{t('qr.title')}</DialogTitle>
+          <DialogDescription>{t('qr.desc')}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center gap-4 py-2">
           <div className="rounded-2xl border bg-white p-4 shadow-sm">
@@ -57,7 +57,7 @@ export function VehicleQrDialog({
           </div>
           <Button variant="secondary" className="w-full gap-1.5" onClick={copy}>
             <Copy className="size-4" aria-hidden />
-            Copy payment link
+            {t('qr.copy')}
           </Button>
         </div>
       </DialogContent>

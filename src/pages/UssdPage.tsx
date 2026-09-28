@@ -13,6 +13,7 @@ import { useVehicles } from '@/hooks/useVehicles';
 import { useWorkerPayments } from '@/hooks/usePayments';
 import { useWorkerSettings } from '@/hooks/useWorkerSettings';
 import { usePayFare } from '@/hooks/useSatorideActions';
+import { useTranslation } from '@/lib/i18n';
 import {
   DEMO_FLEET_PUBKEY,
   formatKes,
@@ -26,7 +27,7 @@ import {
  * Demonstrates the "A — Accessible" promise: every core SatoRide function on a
  * basic feature phone, no smartphone or data bundle required. The payment path
  * is real — it settles through the same demo wallet and Nostr receipt pipeline
- * as the smartphone app.
+ * as the smartphone app, and the whole session speaks your language.
  */
 
 type Screen =
@@ -45,10 +46,11 @@ type Screen =
   | { id: 'ended' };
 
 export default function UssdPage() {
+  const { t } = useTranslation();
+
   useSeoMeta({
-    title: 'USSD simulator — SatoRide',
-    description:
-      'Experience SatoRide on a basic phone: pay, check balances, savings and earnings over USSD.',
+    title: t('seo.ussd.title'),
+    description: t('seo.ussd.desc'),
   });
 
   const { user } = useCurrentUser();
@@ -75,6 +77,7 @@ export default function UssdPage() {
   const savingsTotal = (workerStats.grossAll * (settings?.savingsPercent ?? 5)) / 100;
   const emergencyTotal = (workerStats.grossAll * (settings?.emergencyPercent ?? 5)) / 100;
   const emergencyGoal = settings?.emergencyGoal ?? 20000;
+  const emergencyPct = Math.min(100, Math.round((emergencyTotal / emergencyGoal) * 100));
 
   const focusInput = () => setTimeout(() => inputRef.current?.focus(), 50);
 
@@ -89,7 +92,7 @@ export default function UssdPage() {
         } else {
           setScreen({
             id: 'invalid',
-            message: `Unknown code "${value}". Dial *384# for SatoRide.`,
+            message: t('ussd.s.unknownCode', { value }),
             backTo: { id: 'idle' },
           });
         }
@@ -104,7 +107,7 @@ export default function UssdPage() {
           '5': { id: 'earnings' },
           '0': { id: 'ended' },
         };
-        setScreen(next[value] ?? { id: 'invalid', message: 'Invalid choice.', backTo: { id: 'menu' } });
+        setScreen(next[value] ?? { id: 'invalid', message: t('ussd.s.invalidChoice'), backTo: { id: 'menu' } });
         break;
       }
       case 'pay-plate': {
@@ -121,7 +124,7 @@ export default function UssdPage() {
         } else {
           setScreen({
             id: 'invalid',
-            message: `Vehicle "${value}" not found. Check the code on the sticker.`,
+            message: t('ussd.s.notFound', { value }),
             backTo: { id: 'pay-plate' },
           });
         }
@@ -166,6 +169,12 @@ export default function UssdPage() {
     setInput('');
   };
 
+  const infoCards: { title: string; detail: string }[] = [
+    { title: t('ussd.card1Title'), detail: t('ussd.card1Desc') },
+    { title: t('ussd.card2Title'), detail: t('ussd.card2Desc') },
+    { title: t('ussd.card3Title'), detail: t('ussd.card3Desc') },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -179,34 +188,17 @@ export default function UssdPage() {
                 A — ACCESSIBLE
               </p>
               <h1 className="font-display text-4xl font-extrabold leading-tight md:text-5xl">
-                No smartphone?
+                {t('ussd.title1')}
                 <br />
-                No problem.
+                {t('ussd.title2')}
               </h1>
               <p className="text-muted-foreground max-w-lg text-lg leading-relaxed">
-                A third of commuters may only have a basic phone. SatoRide's USSD
-                channel brings pay, savings and earnings to any handset — try the
-                live simulator.
+                {t('ussd.desc')}
               </p>
             </div>
 
             <div className="space-y-3">
-              {[
-                {
-                  title: 'Dial *384#',
-                  detail: 'Works on any GSM phone — no data bundle, no app install.',
-                },
-                {
-                  title: 'Same engine underneath',
-                  detail:
-                    'The simulator settles through the same demo Lightning wallet and writes real receipts to Nostr.',
-                },
-                {
-                  title: 'Try vehicle code KCA 123A',
-                  detail:
-                    'Choose 1 (Pay), enter the plate from the matatu sticker, confirm — a real receipt comes back.',
-                },
-              ].map((item) => (
+              {infoCards.map((item) => (
                 <Card key={item.title}>
                   <CardContent className="flex gap-3 p-4">
                     <PhoneCall className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
@@ -233,7 +225,7 @@ export default function UssdPage() {
                   <span className="flex items-center gap-1">
                     <Signal className="size-3" aria-hidden /> SafariNet
                   </span>
-                  <span>*384# session</span>
+                  <span>*384#</span>
                 </div>
                 <div className="min-h-[240px] whitespace-pre-wrap break-words">
                   <ScreenText
@@ -242,6 +234,7 @@ export default function UssdPage() {
                     savingsTotal={savingsTotal}
                     emergencyTotal={emergencyTotal}
                     emergencyGoal={emergencyGoal}
+                    emergencyPct={emergencyPct}
                     grossToday={workerStats.grossToday}
                     tripsToday={workerStats.tripsToday}
                   />
@@ -262,13 +255,13 @@ export default function UssdPage() {
                       ref={inputRef}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      placeholder={screen.id === 'pay-plate' ? 'KCA 123A' : 'Reply…'}
+                      placeholder={screen.id === 'pay-plate' ? 'KCA 123A' : t('ussd.replyPlaceholder')}
                       className="h-9 border-zinc-600 bg-zinc-900 font-mono text-sm text-zinc-100 placeholder:text-zinc-500"
-                      aria-label="USSD reply"
+                      aria-label={t('ussd.replyAria')}
                       autoComplete="off"
                     />
                     <Button type="submit" size="sm" className="h-9 rounded-md px-4 font-mono">
-                      Send
+                      {t('ussd.send')}
                     </Button>
                   </form>
                 )}
@@ -281,7 +274,7 @@ export default function UssdPage() {
                       focusInput();
                     }}
                   >
-                    Dial *384#
+                    {t('ussd.dial')}
                   </Button>
                 )}
 
@@ -292,7 +285,7 @@ export default function UssdPage() {
                     disabled={screen.id === 'pay-processing'}
                     onClick={reset}
                   >
-                    {screen.id === 'pay-processing' ? 'Settling…' : 'New session'}
+                    {screen.id === 'pay-processing' ? t('ussd.settling') : t('ussd.newSession')}
                   </Button>
                 )}
 
@@ -304,7 +297,7 @@ export default function UssdPage() {
             <div className="mt-4 flex justify-center">
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs" onClick={reset}>
                 <Undo2 className="size-3.5" aria-hidden />
-                Reset simulator
+                {t('ussd.reset')}
               </Button>
             </div>
           </div>
@@ -324,6 +317,7 @@ function ScreenText({
   savingsTotal,
   emergencyTotal,
   emergencyGoal,
+  emergencyPct,
   grossToday,
   tripsToday,
 }: {
@@ -332,127 +326,71 @@ function ScreenText({
   savingsTotal: number;
   emergencyTotal: number;
   emergencyGoal: number;
+  emergencyPct: number;
   grossToday: number;
   tripsToday: number;
 }) {
+  const { t } = useTranslation();
+
   switch (screen.id) {
     case 'idle':
-      return (
-        <span className="text-zinc-500">
-          Welcome to SatoRide.{'\n\n'}Dial <strong>*384#</strong> to start a session — pay fares,
-          check savings and earnings from any phone.
-        </span>
-      );
+      return <span className="text-zinc-500">{t('ussd.s.idle')}</span>;
     case 'menu':
-      return (
-        <span>
-          <strong>SATORIDE</strong>{'\n'}
-          1. Pay fare{'\n'}
-          2. Wallet balance{'\n'}
-          3. My savings{'\n'}
-          4. Emergency fund{'\n'}
-          5. Today's earnings{'\n'}
-          0. Exit
-        </span>
-      );
+      return <span>{t('ussd.s.menu')}</span>;
     case 'pay-plate':
+      return <span>{t('ussd.s.payPlate')}</span>;
+    case 'pay-confirm': {
+      const lines = [screen.vehicle.name, screen.vehicle.plate, screen.vehicle.route]
+        .filter(Boolean)
+        .join('\n');
       return (
         <span>
-          <strong>PAY FARE</strong>{'\n'}
-          Enter the vehicle code on the sticker (e.g. KCA 123A).{'\n'}
-          Send empty to go back.
+          {t('ussd.s.confirm', { lines, fare: formatKes(screen.vehicle.fare) })}
         </span>
       );
-    case 'pay-confirm':
-      return (
-        <span>
-          <strong>CONFIRM PAYMENT</strong>{'\n'}
-          {screen.vehicle.name}
-          {'\n'}
-          {screen.vehicle.plate ? `${screen.vehicle.plate}\n` : ''}
-          {screen.vehicle.route ? `${screen.vehicle.route}\n` : ''}
-          {'\n'}
-          Fare: <strong>{formatKes(screen.vehicle.fare)}</strong>
-          {'\n\n'}
-          1. Confirm{'\n'}
-          0. Cancel
-        </span>
-      );
+    }
     case 'pay-processing':
-      return (
-        <span>
-          Processing payment…{'\n'}
-          Settling over Lightning.{'\n\n'}Please wait.
-        </span>
-      );
+      return <span>{t('ussd.s.processing')}</span>;
     case 'pay-done':
       return (
         <span className="text-emerald-800">
-          <strong>PAYMENT CONFIRMED ✓</strong>{'\n\n'}
-          {formatKes(screen.vehicle.fare)} paid to {screen.vehicle.name}.{'\n'}
-          Receipt: {screen.receipt}
-          {'\n\n'}
-          Asante! Send any key for menu.
+          {t('ussd.s.done', {
+            fare: formatKes(screen.vehicle.fare),
+            name: screen.vehicle.name,
+            receipt: screen.receipt,
+          })}
         </span>
       );
     case 'pay-failed':
       return (
-        <span className="text-red-700">
-          Payment failed.{'\n'}
-          {screen.message}
-          {'\n\n'}Send any key for menu.
-        </span>
+        <span className="text-red-700">{t('ussd.s.failed', { message: screen.message })}</span>
       );
     case 'balance':
-      return (
-        <span>
-          <strong>WALLET BALANCE</strong>{'\n\n'}⚡ {balance.toLocaleString()} sats (demo)
-          {'\n\n'}Send any key for menu.
-        </span>
-      );
+      return <span>{t('ussd.s.balance', { balance: balance.toLocaleString() })}</span>;
     case 'savings':
-      return (
-        <span>
-          <strong>MY SAVINGS</strong>{'\n\n'}
-          Total saved: <strong>{formatKes(savingsTotal)}</strong>
-          {'\n'}
-          Auto-save rule: every fare contributes.
-          {'\n\n'}Send any key for menu.
-        </span>
-      );
+      return <span>{t('ussd.s.savings', { total: formatKes(savingsTotal) })}</span>;
     case 'emergency':
       return (
         <span>
-          <strong>EMERGENCY FUND</strong>{'\n\n'}
-          Balance: <strong>{formatKes(emergencyTotal)}</strong>
-          {'\n'}
-          Goal: {formatKes(emergencyGoal)} ({Math.min(100, Math.round((emergencyTotal / emergencyGoal) * 100))}%)
-          {'\n\n'}Send any key for menu.
+          {t('ussd.s.emergency', {
+            total: formatKes(emergencyTotal),
+            goal: formatKes(emergencyGoal),
+            pct: emergencyPct,
+          })}
         </span>
       );
     case 'earnings':
       return (
         <span>
-          <strong>TODAY'S EARNINGS</strong>{'\n\n'}
-          Gross: <strong>{formatKes(grossToday)}</strong>
-          {'\n'}
-          Payments: {tripsToday}
-          {'\n\n'}Send any key for menu.
+          {t('ussd.s.earnings', { gross: formatKes(grossToday), trips: tripsToday })}
         </span>
       );
     case 'invalid':
       return (
-        <span className="text-red-700">
-          {screen.message}
-          {'\n\n'}Send any key to go back.
-        </span>
+        <span className="text-red-700">{t('ussd.s.invalid', { message: screen.message })}</span>
       );
     case 'ended':
-      return (
-        <span className="text-zinc-500">
-          Session ended.{'\n\n'}Asante for riding with SatoRide. Move. Earn. Save. Thrive.
-        </span>
-      );
+      return <span className="text-zinc-500">{t('ussd.s.ended')}</span>;
   }
 }
 

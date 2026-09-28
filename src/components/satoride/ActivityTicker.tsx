@@ -1,6 +1,7 @@
 import { Zap } from 'lucide-react';
 import { useAllPayments } from '@/hooks/usePayments';
-import { SERVICE_TYPE_LABEL, formatKes, timeAgo } from '@/lib/satoride';
+import { formatKes } from '@/lib/satoride';
+import { SERVICE_TYPE_KEYS, useTranslation } from '@/lib/i18n';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
@@ -9,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export function ActivityTicker({ limit = 6 }: { limit?: number }) {
   const { data: payments, isLoading } = useAllPayments(30);
+  const { t, timeAgo } = useTranslation();
   const latest = payments?.slice(0, limit) ?? [];
 
   if (isLoading) {
@@ -26,7 +28,7 @@ export function ActivityTicker({ limit = 6 }: { limit?: number }) {
   return (
     <div
       className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      aria-label="Latest payments across the platform"
+      aria-label={t('ticker.aria')}
     >
       {latest.map((payment) => (
         <div
@@ -38,7 +40,7 @@ export function ActivityTicker({ limit = 6 }: { limit?: number }) {
           </span>
           <span className="font-semibold tabular-nums">{formatKes(payment.amount)}</span>
           <span className="text-muted-foreground text-xs">
-            {SERVICE_TYPE_LABEL[payment.service]} · {timeAgo(payment.createdAt)}
+            {t(SERVICE_TYPE_KEYS[payment.service])} · {timeAgo(payment.createdAt)}
           </span>
         </div>
       ))}

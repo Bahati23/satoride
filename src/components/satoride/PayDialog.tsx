@@ -12,8 +12,9 @@ import { usePayFare, type PayFareResult } from '@/hooks/useSatorideActions';
 import { useDemoWallet } from '@/lib/wallet';
 import { useToast } from '@/hooks/useToast';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVICE_TYPE_KEYS, useTranslation } from '@/lib/i18n';
+import type { TranslationKey } from '@/lib/locales/en';
 import {
-  SERVICE_TYPE_LABEL,
   formatKes,
   kesToSats,
   type VehicleService,
@@ -23,11 +24,11 @@ import { ServiceIcon } from './ServiceIcon';
 
 type Step = 'confirm' | 'processing' | 'success';
 
-const PROCESSING_LINES = [
-  'Requesting Lightning invoice…',
-  'Signing payment…',
-  'Settling over the network…',
-  'Writing your receipt to Nostr…',
+const PROCESSING_LINE_KEYS: TranslationKey[] = [
+  'pay.line1',
+  'pay.line2',
+  'pay.line3',
+  'pay.line4',
 ];
 
 export function PayDialog({
@@ -46,6 +47,7 @@ export function PayDialog({
   const { balance, topUp, faucetAmount } = useDemoWallet();
   const { user } = useCurrentUser();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const payFare = usePayFare();
 
   const sats = service ? kesToSats(service.fare) : 0;
@@ -64,7 +66,7 @@ export function PayDialog({
   useEffect(() => {
     if (step !== 'processing') return;
     const timer = setInterval(
-      () => setLineIndex((i) => (i + 1) % PROCESSING_LINES.length),
+      () => setLineIndex((i) => (i + 1) % PROCESSING_LINE_KEYS.length),
       900,
     );
     return () => clearInterval(timer);
@@ -83,7 +85,7 @@ export function PayDialog({
         setStep('confirm');
         toast({
           variant: 'destructive',
-          title: 'Payment failed',
+          title: t('pay.failed'),
           description: error.message,
         });
       },
@@ -96,10 +98,8 @@ export function PayDialog({
         {step === 'confirm' && (
           <>
             <DialogHeader>
-              <DialogTitle className="font-display text-xl">Confirm fare</DialogTitle>
-              <DialogDescription>
-                Scan → Confirm → Pay. That's the whole journey.
-              </DialogDescription>
+              <DialogTitle className="font-display text-xl">{t('pay.confirmTitle')}</DialogTitle>
+              <DialogDescription>{t('pay.confirmDesc')}</DialogDescription>
             </DialogHeader>
 
             <div className="mt-2 space-y-5">
@@ -108,7 +108,7 @@ export function PayDialog({
                 <div className="min-w-0">
                   <p className="truncate font-semibold">{service.name}</p>
                   <p className="text-muted-foreground truncate text-sm">
-                    {[service.plate, service.route || SERVICE_TYPE_LABEL[service.type]]
+                    {[service.plate, service.route || t(SERVICE_TYPE_KEYS[service.type])]
                       .filter(Boolean)
                       .join(' · ')}
                   </p>
@@ -121,23 +121,23 @@ export function PayDialog({
                 </p>
                 <p className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-amber-600 dark:text-amber-400">
                   <Zap className="size-3.5 fill-current" aria-hidden />
-                  {sats.toLocaleString()} sats
+                  {sats.toLocaleString()} {t('wallet.sats')}
                 </p>
               </div>
 
               <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2 text-sm">
-                <span className="text-muted-foreground">Demo wallet balance</span>
+                <span className="text-muted-foreground">{t('pay.walletBalance')}</span>
                 <span className="font-semibold tabular-nums">⚡ {balance.toLocaleString()}</span>
               </div>
 
               {insufficient ? (
                 <div className="space-y-3">
                   <p className="text-destructive text-center text-sm font-medium">
-                    Not enough demo sats for this fare.
+                    {t('pay.insufficient')}
                   </p>
                   <Button className="w-full gap-1.5" variant="secondary" onClick={topUp}>
                     <Fuel className="size-4" aria-hidden />
-                    Top up {faucetAmount.toLocaleString()} sats from faucet
+                    {t('pay.topUp', { amount: faucetAmount.toLocaleString() })}
                   </Button>
                 </div>
               ) : (
@@ -147,14 +147,13 @@ export function PayDialog({
                   onClick={handlePay}
                 >
                   <Zap className="size-5 fill-current" aria-hidden />
-                  PAY {formatKes(service.fare)}
+                  {t('pay.button', { fare: formatKes(service.fare) })}
                 </Button>
               )}
 
               {!user && (
                 <p className="text-muted-foreground text-center text-xs leading-relaxed">
-                  Paying as a guest — receipts are saved to this device. Log in to
-                  attach them to your Nostr account.
+                  {t('pay.guest')}
                 </p>
               )}
             </div>
@@ -163,14 +162,19 @@ export function PayDialog({
 
         {step === 'processing' && (
           <div className="flex flex-col items-center gap-6 py-10">
+            <DialogDescription className="sr-only">
+              {t('pay.processing', { fare: formatKes(service.fare) })}
+            </DialogDescription>
             <div className="grid size-20 place-items-center rounded-full bg-amber-500/15">
               <Zap className="animate-bolt-pulse size-10 fill-amber-500 text-amber-500" aria-hidden />
             </div>
             <div className="space-y-2 text-center">
-              <p className="font-display text-lg font-semibold">Paying {formatKes(service.fare)}</p>
+              <p className="font-display text-lg font-semibold">
+                {t('pay.processing', { fare: formatKes(service.fare) })}
+              </p>
               <p className="text-muted-foreground flex items-center justify-center gap-2 text-sm">
                 <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                {PROCESSING_LINES[lineIndex]}
+                {t(PROCESSING_LINE_KEYS[lineIndex])}
               </p>
             </div>
           </div>
@@ -178,6 +182,9 @@ export function PayDialog({
 
         {step === 'success' && result && (
           <div className="space-y-5 py-2">
+            <DialogDescription className="sr-only">
+              {t('receipt.confirmed')}
+            </DialogDescription>
             <ReceiptTicket
               service={service}
               receipt={result.receipt}
@@ -189,7 +196,7 @@ export function PayDialog({
               className="w-full rounded-xl font-semibold"
               onClick={() => onOpenChange(false)}
             >
-              Done — enjoy the ride
+              {t('pay.done')}
             </Button>
           </div>
         )}

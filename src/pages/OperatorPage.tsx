@@ -20,19 +20,16 @@ import { ServiceIcon } from '@/components/satoride/ServiceIcon';
 import { EmptyState } from '@/components/satoride/EmptyState';
 import { useAllPayments } from '@/hooks/usePayments';
 import { useVehicles } from '@/hooks/useVehicles';
-import {
-  SERVICE_TYPE_LABEL,
-  formatKes,
-  timeAgo,
-  type ServiceType,
-} from '@/lib/satoride';
+import { SERVICE_TYPE_KEYS, useTranslation } from '@/lib/i18n';
+import { formatKes, type ServiceType } from '@/lib/satoride';
 
 /** Operator / SACCO view — fleet-wide revenue and activity. */
 export default function OperatorPage() {
+  const { t, timeAgo } = useTranslation();
+
   useSeoMeta({
-    title: 'Operator dashboard — SatoRide',
-    description:
-      'Fleet-wide view: vehicles, transactions and revenue across the SatoRide network.',
+    title: t('seo.operator.title'),
+    description: t('seo.operator.desc'),
   });
 
   const { data: payments, isLoading: paymentsLoading } = useAllPayments(300);
@@ -70,40 +67,37 @@ export default function OperatorPage() {
 
       <main className="container flex-1 space-y-8 py-10">
         <div className="space-y-2">
-          <h1 className="font-display text-4xl font-extrabold">Operator dashboard</h1>
-          <p className="text-muted-foreground max-w-lg">
-            The view for SACCOs, fleet operators and mobility businesses — every
-            vehicle, transaction and shilling, aggregated live from Nostr.
-          </p>
+          <h1 className="font-display text-4xl font-extrabold">{t('op.title')}</h1>
+          <p className="text-muted-foreground max-w-lg">{t('op.desc')}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             icon={CircleDollarSign}
             tone="flame"
-            label="Total revenue"
+            label={t('op.totalRevenue')}
             value={formatKes(stats.revenue)}
-            hint="all recorded fares"
+            hint={t('op.totalRevenueHint')}
           />
           <StatCard
             icon={Activity}
             tone="leaf"
-            label="Transactions"
+            label={t('op.transactions')}
             value={String(stats.count)}
-            hint="confirmed payments"
+            hint={t('op.transactionsHint')}
           />
           <StatCard
             icon={Wallet}
             tone="gold"
-            label="Active services"
+            label={t('op.activeServices')}
             value={String(vehicles?.length ?? 0)}
-            hint="published listings"
+            hint={t('op.activeServicesHint')}
           />
           <StatCard
             icon={Users}
-            label="Workers earning"
+            label={t('op.workers')}
             value={String(stats.workers)}
-            hint="unique payees"
+            hint={t('op.workersHint')}
           />
         </div>
 
@@ -111,7 +105,7 @@ export default function OperatorPage() {
           {/* Revenue by service type */}
           <Card>
             <CardHeader>
-              <CardTitle className="font-display text-lg">Revenue by service</CardTitle>
+              <CardTitle className="font-display text-lg">{t('op.revenueByService')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {paymentsLoading ? (
@@ -119,9 +113,7 @@ export default function OperatorPage() {
                   <Skeleton key={i} className="h-10 w-full rounded-lg" />
                 ))
               ) : stats.byType.size === 0 ? (
-                <p className="text-muted-foreground py-6 text-center text-sm">
-                  No transactions recorded yet.
-                </p>
+                <p className="text-muted-foreground py-6 text-center text-sm">{t('op.noTx')}</p>
               ) : (
                 [...stats.byType.entries()]
                   .sort((a, b) => b[1].revenue - a[1].revenue)
@@ -130,7 +122,7 @@ export default function OperatorPage() {
                       <div className="flex items-center justify-between text-sm">
                         <span className="flex items-center gap-2 font-medium">
                           <ServiceIcon type={type} className="size-7" iconClassName="size-3.5" />
-                          {SERVICE_TYPE_LABEL[type]}
+                          {t(SERVICE_TYPE_KEYS[type])}
                         </span>
                         <span className="font-semibold tabular-nums">
                           {formatKes(data.revenue)}
@@ -143,7 +135,7 @@ export default function OperatorPage() {
                         />
                       </div>
                       <p className="text-muted-foreground text-xs tabular-nums">
-                        {data.count} payment{data.count === 1 ? '' : 's'}
+                        {t(data.count === 1 ? 'op.paymentOne' : 'op.paymentMany', { n: data.count })}
                       </p>
                     </div>
                   ))
@@ -154,7 +146,7 @@ export default function OperatorPage() {
           {/* Fleet table */}
           <Card>
             <CardHeader>
-              <CardTitle className="font-display text-lg">Fleet performance</CardTitle>
+              <CardTitle className="font-display text-lg">{t('op.fleet')}</CardTitle>
             </CardHeader>
             <CardContent>
               {vehiclesLoading ? (
@@ -164,18 +156,15 @@ export default function OperatorPage() {
                   ))}
                 </div>
               ) : (vehicles ?? []).length === 0 ? (
-                <EmptyState
-                  title="No services yet"
-                  description="Registered vehicles and services will appear here."
-                />
+                <EmptyState title={t('op.noServicesTitle')} description={t('op.noServicesDesc')} />
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Service</TableHead>
-                      <TableHead className="text-right">Fare</TableHead>
-                      <TableHead className="text-right">Payments</TableHead>
-                      <TableHead className="text-right">Revenue</TableHead>
+                      <TableHead>{t('op.thService')}</TableHead>
+                      <TableHead className="text-right">{t('op.thFare')}</TableHead>
+                      <TableHead className="text-right">{t('op.thPayments')}</TableHead>
+                      <TableHead className="text-right">{t('op.thRevenue')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -216,12 +205,12 @@ export default function OperatorPage() {
         {/* Recent transactions */}
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
-            <CardTitle className="font-display text-lg">Latest transactions</CardTitle>
+            <CardTitle className="font-display text-lg">{t('op.latest')}</CardTitle>
             <Link
               to="/ride"
               className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
             >
-              Open passenger app
+              {t('op.openPassenger')}
               <ArrowRight className="size-3.5" aria-hidden />
             </Link>
           </CardHeader>
@@ -231,9 +220,7 @@ export default function OperatorPage() {
                 <Skeleton key={i} className="h-12 w-full rounded-lg" />
               ))
             ) : (payments ?? []).length === 0 ? (
-              <p className="text-muted-foreground py-6 text-center text-sm">
-                No transactions yet.
-              </p>
+              <p className="text-muted-foreground py-6 text-center text-sm">{t('op.noTx')}</p>
             ) : (
               (payments ?? []).slice(0, 10).map((payment) => (
                 <div
@@ -243,7 +230,7 @@ export default function OperatorPage() {
                   <ServiceIcon type={payment.service} className="size-9" iconClassName="size-4" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">
-                      {payment.event.content || 'Fare payment'}
+                      {payment.event.content || t('receipts.fareFallback')}
                     </p>
                     <p className="text-muted-foreground font-mono text-xs">{payment.receipt}</p>
                   </div>

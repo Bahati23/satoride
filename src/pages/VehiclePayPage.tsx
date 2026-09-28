@@ -13,11 +13,8 @@ import { ServiceIcon } from '@/components/satoride/ServiceIcon';
 import { PayDialog } from '@/components/satoride/PayDialog';
 import { EmptyState } from '@/components/satoride/EmptyState';
 import { useVehicle } from '@/hooks/useVehicles';
-import {
-  SERVICE_TYPE_LABEL,
-  formatKes,
-  kesToSats,
-} from '@/lib/satoride';
+import { SERVICE_TYPE_KEYS, useTranslation } from '@/lib/i18n';
+import { formatKes, kesToSats } from '@/lib/satoride';
 
 /**
  * The page a passenger lands on after scanning a vehicle QR code
@@ -26,12 +23,15 @@ import {
 export function VehiclePayPage({ pubkey, d }: { pubkey: string; d: string }) {
   const { data: service, isLoading } = useVehicle(pubkey, d);
   const [payOpen, setPayOpen] = useState(false);
+  const { t } = useTranslation();
 
   useSeoMeta({
-    title: service ? `Pay ${service.name} — SatoRide` : 'Pay — SatoRide',
+    title: service
+      ? t('seo.payService.title', { name: service.name })
+      : t('seo.payService.titleFallback'),
     description: service
-      ? `Pay ${formatKes(service.fare)} to ${service.name}${service.route ? ` (${service.route})` : ''} with SatoRide.`
-      : 'Pay a fare with SatoRide.',
+      ? t('seo.payService.desc', { fare: formatKes(service.fare), name: service.name })
+      : t('seo.payService.descFallback'),
   });
 
   return (
@@ -43,7 +43,7 @@ export function VehiclePayPage({ pubkey, d }: { pubkey: string; d: string }) {
           <Button asChild variant="ghost" size="sm" className="gap-1.5 -ml-2">
             <Link to="/ride">
               <ArrowLeft className="size-4" aria-hidden />
-              All services
+              {t('vp.back')}
             </Link>
           </Button>
 
@@ -62,16 +62,13 @@ export function VehiclePayPage({ pubkey, d }: { pubkey: string; d: string }) {
               </CardContent>
             </Card>
           ) : !service ? (
-            <EmptyState
-              title="Service not found"
-              description="This payment link couldn't be found on your relays. It may have been removed, or the relays haven't synced it yet."
-            />
+            <EmptyState title={t('vp.notFoundTitle')} description={t('vp.notFoundDesc')} />
           ) : (
             <>
               <Card className="overflow-hidden">
                 <div className="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-4 text-orange-50">
                   <p className="font-display text-xs font-bold tracking-[0.25em]">SATORIDE</p>
-                  <p className="mt-1 text-sm opacity-90">You scanned to pay</p>
+                  <p className="mt-1 text-sm opacity-90">{t('vp.scanned')}</p>
                 </div>
                 <CardContent className="space-y-6 p-6">
                   <div className="flex items-center gap-4">
@@ -79,7 +76,7 @@ export function VehiclePayPage({ pubkey, d }: { pubkey: string; d: string }) {
                     <div className="min-w-0">
                       <p className="truncate text-lg font-bold">{service.name}</p>
                       <p className="text-muted-foreground truncate text-sm">
-                        {service.route || SERVICE_TYPE_LABEL[service.type]}
+                        {service.route || t(SERVICE_TYPE_KEYS[service.type])}
                       </p>
                     </div>
                     {service.plate && (
@@ -91,14 +88,14 @@ export function VehiclePayPage({ pubkey, d }: { pubkey: string; d: string }) {
 
                   <div className="py-2 text-center">
                     <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
-                      Fare
+                      {t('vp.fare')}
                     </p>
                     <p className="font-display mt-1 text-6xl font-extrabold tabular-nums">
                       {formatKes(service.fare)}
                     </p>
                     <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-amber-600 dark:text-amber-400">
                       <Zap className="size-4 fill-current" aria-hidden />
-                      {kesToSats(service.fare).toLocaleString()} sats · settles in ~1 second
+                      {t('vp.satsLine', { sats: kesToSats(service.fare).toLocaleString() })}
                     </p>
                   </div>
 
@@ -108,12 +105,11 @@ export function VehiclePayPage({ pubkey, d }: { pubkey: string; d: string }) {
                     onClick={() => setPayOpen(true)}
                   >
                     <Zap className="size-5 fill-current" aria-hidden />
-                    PAY {formatKes(service.fare)}
+                    {t('vp.pay', { fare: formatKes(service.fare) })}
                   </Button>
 
                   <p className="text-muted-foreground text-center text-xs leading-relaxed">
-                    No sign-up needed. Your receipt is stored on Nostr and shown
-                    instantly after payment.
+                    {t('vp.noSignup')}
                   </p>
                 </CardContent>
               </Card>

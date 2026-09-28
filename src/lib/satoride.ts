@@ -34,16 +34,6 @@ export const SERVICE_TYPES = [
 
 export type ServiceType = (typeof SERVICE_TYPES)[number];
 
-export const SERVICE_TYPE_LABEL: Record<ServiceType, string> = {
-  matatu: 'Matatu',
-  boda: 'Boda boda',
-  taxi: 'Taxi',
-  parking: 'Parking',
-  charging: 'EV charging',
-  wifi: 'Public Wi-Fi',
-  other: 'Service',
-};
-
 export interface VehicleService {
   /** Full addressable coordinate: `31483:<pubkey>:<d>` */
   coordinate: string;
@@ -197,21 +187,6 @@ export function serviceNaddr(service: VehicleService): string {
     kind: KIND_SERVICE,
     pubkey: service.pubkey,
     identifier: service.d,
-  });
-}
-
-export function timeAgo(ts: number): string {
-  const seconds = Math.max(1, Math.floor(Date.now() / 1000) - ts);
-  if (seconds < 60) return 'just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hr ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
-  return new Date(ts * 1000).toLocaleDateString('en-KE', {
-    day: 'numeric',
-    month: 'short',
   });
 }
 

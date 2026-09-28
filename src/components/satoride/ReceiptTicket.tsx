@@ -1,6 +1,7 @@
 import { CheckCircle2, Zap } from 'lucide-react';
 import type { VehicleService } from '@/lib/satoride';
 import { formatKes } from '@/lib/satoride';
+import { useTranslation } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 interface ReceiptTicketProps {
@@ -16,6 +17,7 @@ interface ReceiptTicketProps {
  * perforated separator — the moment of trust after a payment.
  */
 export function ReceiptTicket({ service, receipt, sats, timestamp, className }: ReceiptTicketProps) {
+  const { t, locale } = useTranslation();
   const date = timestamp ? new Date(timestamp * 1000) : new Date();
 
   return (
@@ -36,18 +38,20 @@ export function ReceiptTicket({ service, receipt, sats, timestamp, className }: 
         <div className="flex flex-col items-center gap-1 text-center">
           <CheckCircle2 className="size-8 text-emerald-500" aria-hidden />
           <p className="text-sm font-semibold tracking-wide text-emerald-600 dark:text-emerald-400">
-            PAYMENT CONFIRMED
+            {t('receipt.confirmed')}
           </p>
         </div>
 
         <div className="text-center">
-          <p className="text-muted-foreground text-xs uppercase tracking-wider">Amount</p>
+          <p className="text-muted-foreground text-xs uppercase tracking-wider">
+            {t('receipt.amount')}
+          </p>
           <p className="font-display text-4xl font-bold tabular-nums">
             {formatKes(service.fare)}
           </p>
           <p className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
             <Zap className="size-3 fill-current" aria-hidden />
-            {sats.toLocaleString()} sats · settled instantly
+            {t('receipt.satsLine', { sats: sats.toLocaleString() })}
           </p>
         </div>
 
@@ -59,12 +63,12 @@ export function ReceiptTicket({ service, receipt, sats, timestamp, className }: 
         </div>
 
         <dl className="space-y-1.5 text-sm">
-          <Row label="Service" value={service.name} />
-          {service.plate && <Row label="Vehicle" value={service.plate} />}
-          {service.route && <Row label="Route" value={service.route} />}
+          <Row label={t('receipt.service')} value={service.name} />
+          {service.plate && <Row label={t('receipt.vehicle')} value={service.plate} />}
+          {service.route && <Row label={t('receipt.route')} value={service.route} />}
           <Row
-            label="Date"
-            value={date.toLocaleString('en-KE', {
+            label={t('receipt.date')}
+            value={date.toLocaleString(locale, {
               day: 'numeric',
               month: 'short',
               hour: '2-digit',
@@ -74,7 +78,9 @@ export function ReceiptTicket({ service, receipt, sats, timestamp, className }: 
         </dl>
 
         <div className="rounded-lg bg-secondary px-3 py-2 text-center">
-          <p className="text-muted-foreground text-[11px] uppercase tracking-wider">Receipt №</p>
+          <p className="text-muted-foreground text-[11px] uppercase tracking-wider">
+            {t('receipt.number')}
+          </p>
           <p className="font-mono text-sm font-semibold tracking-widest">{receipt}</p>
         </div>
 
@@ -91,7 +97,7 @@ export function ReceiptTicket({ service, receipt, sats, timestamp, className }: 
           )}
         </div>
         <p className="text-muted-foreground pb-1 text-center text-[11px]">
-          Asante! Recorded on Nostr · satoride
+          {t('receipt.footer')}
         </p>
       </div>
     </div>

@@ -13,13 +13,16 @@ import { EmptyState } from '@/components/satoride/EmptyState';
 import { usePassengerPayments } from '@/hooks/usePayments';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { getGuestPubkey } from '@/lib/guest';
-import { formatKes, timeAgo } from '@/lib/satoride';
+import { useTranslation } from '@/lib/i18n';
+import { formatKes } from '@/lib/satoride';
 
 /** Passenger receipt history — for the logged-in account or the guest key. */
 export default function ReceiptsPage() {
+  const { t, timeAgo } = useTranslation();
+
   useSeoMeta({
-    title: 'My receipts — SatoRide',
-    description: 'Every fare you have paid, with a verifiable receipt stored on Nostr.',
+    title: t('seo.receipts.title'),
+    description: t('seo.receipts.desc'),
   });
 
   const { user } = useCurrentUser();
@@ -40,14 +43,12 @@ export default function ReceiptsPage() {
           <Button asChild variant="ghost" size="sm" className="gap-1.5 -ml-2">
             <Link to="/ride">
               <ArrowLeft className="size-4" aria-hidden />
-              Pay a fare
+              {t('receipts.back')}
             </Link>
           </Button>
-          <h1 className="font-display text-4xl font-extrabold">My receipts</h1>
+          <h1 className="font-display text-4xl font-extrabold">{t('receipts.title')}</h1>
           <p className="text-muted-foreground max-w-md">
-            {user
-              ? 'Receipts linked to your Nostr account — portable across any client.'
-              : 'Receipts saved to this device via your guest key. Log in to attach them to your Nostr account.'}
+            {user ? t('receipts.descUser') : t('receipts.descGuest')}
           </p>
         </div>
 
@@ -58,14 +59,11 @@ export default function ReceiptsPage() {
             ))}
           </div>
         ) : !payments || payments.length === 0 ? (
-          <EmptyState
-            title="No receipts yet"
-            description="Pay your first fare and your receipt will appear here instantly."
-          >
+          <EmptyState title={t('receipts.emptyTitle')} description={t('receipts.emptyDesc')}>
             <Button asChild className="mt-1 gap-2 rounded-full">
               <Link to="/ride">
                 <ReceiptText className="size-4" aria-hidden />
-                Pay a fare
+                {t('receipts.back')}
               </Link>
             </Button>
           </EmptyState>
@@ -75,15 +73,17 @@ export default function ReceiptsPage() {
               <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest opacity-80">
-                    Total mobility spend
+                    {t('receipts.total')}
                   </p>
                   <p className="font-display text-3xl font-extrabold tabular-nums">
                     {formatKes(total)}
                   </p>
                 </div>
                 <div className="text-right text-sm">
-                  <p className="font-semibold tabular-nums">{payments.length} payments</p>
-                  <p className="opacity-80">all confirmed on Nostr</p>
+                  <p className="font-semibold tabular-nums">
+                    {t('receipts.count', { n: payments.length })}
+                  </p>
+                  <p className="opacity-80">{t('receipts.confirmedNote')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -95,7 +95,7 @@ export default function ReceiptsPage() {
                     <ServiceIcon type={payment.service} className="size-10" iconClassName="size-4.5" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">
-                        {payment.event.content || 'Fare payment'}
+                        {payment.event.content || t('receipts.fareFallback')}
                       </p>
                       <p className="text-muted-foreground text-xs">
                         {payment.receipt} · {timeAgo(payment.createdAt)}
