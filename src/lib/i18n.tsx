@@ -8,20 +8,34 @@ import {
   type ReactNode,
 } from 'react';
 
-import { en, type TranslationKey } from './locales/en';
+import { en, type TranslationKey, type Translations } from './locales/en';
 import { sw } from './locales/sw';
+import { fr } from './locales/fr';
+import { yo } from './locales/yo';
+import { ha } from './locales/ha';
 import type { ServiceType } from '@/lib/satoride';
 
-export type Language = 'en' | 'sw';
-
-export const LANGUAGES: { code: Language; label: string; short: string }[] = [
+export const LANGUAGES = [
   { code: 'en', label: 'English', short: 'EN' },
-  { code: 'sw', label: 'Kiswahili', short: 'KIS' },
-];
+  { code: 'sw', label: 'Kiswahili', short: 'SW' },
+  { code: 'fr', label: 'Français', short: 'FR' },
+  { code: 'yo', label: 'Yorùbá', short: 'YO' },
+  { code: 'ha', label: 'Hausa', short: 'HA' },
+] as const;
 
-const dictionaries: Record<Language, Translations> = { en, sw };
+export type Language = (typeof LANGUAGES)[number]['code'];
 
-type Translations = Record<TranslationKey, string>;
+const dictionaries: Record<Language, Translations> = { en, sw, fr, yo, ha };
+
+/** BCP-47 locales used for date and number formatting per language. */
+const LOCALES: Record<Language, string> = {
+  en: 'en-KE',
+  sw: 'sw-KE',
+  fr: 'fr-FR',
+  yo: 'yo-NG',
+  ha: 'ha-NG',
+};
+
 type Vars = Record<string, string | number>;
 
 interface I18nContextValue {
@@ -42,7 +56,8 @@ const STORAGE_KEY = 'satoride:language';
 function initialLanguage(): Language {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'sw' || stored === 'en') return stored;
+    const match = LANGUAGES.find((l) => l.code === stored);
+    if (match) return match.code;
   } catch {
     // Storage unavailable — fall through.
   }
@@ -67,7 +82,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<I18nContextValue>(() => {
     const dict = dictionaries[lang];
-    const locale = lang === 'sw' ? 'sw-KE' : 'en-KE';
+    const locale = LOCALES[lang];
 
     const t = (key: TranslationKey, vars?: Vars): string => {
       let text: string = dict[key] ?? en[key] ?? key;
